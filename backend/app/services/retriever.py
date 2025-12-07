@@ -13,6 +13,12 @@ class Retriever:
 
         contexts = []
         for h in hits:
-            contexts.append(h.payload["text"])
+            contexts.append({
+                "text": h.payload.get("text"),
+                "source": h.payload.get("source"),
+                "chunk_id": h.payload.get("chunk_id"),
+                "score": h.score,
+                "id": h.id
+            })
 
         return contexts

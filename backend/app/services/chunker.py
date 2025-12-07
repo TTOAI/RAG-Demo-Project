@@ -1,6 +1,6 @@
 from app.utils.text_cleaning import clean_text
 
-def chunk_text(text: str, chunk_size: int = 300, overlap: int = 50):
+def chunk_text(text: str, chunk_size: int = 200, overlap: int = 50):
     text = clean_text(text)
 
     chunks = []

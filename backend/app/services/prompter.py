@@ -1,5 +1,5 @@
-def build_prompt(query: str, contexts: list[str]):
-    context_text = "\n\n".join(contexts)
+def build_prompt(query: str, contexts: list):
+    context_text = "\n\n".join([c["text"] for c in contexts])
 
     prompt = (
         "다음은 참고할 문서 조각들이야.\n"
@@ -12,4 +12,4 @@ def build_prompt(query: str, contexts: list[str]):
         "답변:"
     )
 
-    return prompt
+    return prompt.strip()

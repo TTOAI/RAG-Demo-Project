@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/build-query")
 def build_query(q: str):
-    retriever = Retriever(top_k=5)
+    retriever = Retriever(top_k=15)
     contexts = retriever.retrieve(q)
 
     prompt = build_prompt(q, contexts)
@@ -20,15 +20,24 @@ def build_query(q: str):
 
 @router.get("/query")
 def query(q: str):
-    retriever = Retriever(top_k=5)
+    retriever = Retriever(top_k=15)
     contexts = retriever.retrieve(q)
 
     prompt = build_prompt(q, contexts)
 
     answer = ask_llm(prompt)
 
+    evidences = []
+    for c in contexts:
+        evidences.append({
+            "score": c.get("score"),
+            "text": c.get("text"),
+            "source": c.get("source"),
+            "chunk_id": c.get("chunk_id")
+        })
+
     return {
         "query": q,
-        "contexts_used": len(contexts),
-        "answer": answer
+        "answer": answer,
+        "evidences": evidences
     }
