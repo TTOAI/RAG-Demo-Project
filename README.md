@@ -44,6 +44,13 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 - `/search?q=` API로 관련 chunk 검색
 - end-to-end ingestion 파이프라인 완성
 
+### 5. Retrieval 파이프라인 구성
+- 질문 → embedding
+- Qdrant에서 관련 문서 검색
+- 검색된 chunk 취합
+- prompt 생성
+- LLM에게 전달할 준비 완료
+
 ## 토의
 
 ### 어려웠던 점
