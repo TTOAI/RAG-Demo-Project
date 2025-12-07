@@ -29,7 +29,7 @@ class QdrantDB:
             points=points
         )
 
-    def search(self, query_vector, top_k=15):
+    def search(self, query_vector, top_k=5):
         hits = self.client.query_points(
             collection_name=collection_name,
             query=query_vector,

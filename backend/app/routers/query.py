@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/build-query")
 def build_query(q: str):
-    retriever = Retriever(top_k=15)
+    retriever = Retriever(top_k=5)
     contexts = retriever.retrieve(q)
 
     prompt = build_prompt(q, contexts)
@@ -20,7 +20,7 @@ def build_query(q: str):
 
 @router.get("/query")
 def query(q: str):
-    retriever = Retriever(top_k=15)
+    retriever = Retriever(top_k=5)
     contexts = retriever.retrieve(q)
 
     prompt = build_prompt(q, contexts)
