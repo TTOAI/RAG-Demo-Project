@@ -1,4 +1,4 @@
-from app.services.embedding import get_embedding
+from app.services.embedding import get_embedding, get_query_embedding
 from app.services.qdrant_client import QdrantDB
 
 class Retriever:
@@ -7,7 +7,7 @@ class Retriever:
         self.top_k = top_k
 
     def retrieve(self, query: str):
-        query_vec = get_embedding(query)
+        query_vec = get_query_embedding(query)
 
         hits = self.db.search(query_vec, top_k=self.top_k)
 

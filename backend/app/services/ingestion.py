@@ -1,7 +1,7 @@
 import uuid
 
 from app.services.chunker import chunk_text
-from app.services.embedding import get_embedding
+from app.services.embedding import get_embedding, get_passage_embedding
 from app.services.qdrant_client import QdrantDB
 
 def ingest_document(source: str, text: str):
@@ -11,7 +11,7 @@ def ingest_document(source: str, text: str):
     if not chunks:
         return {"message": "No content to ingest", "source": source, "chunks": 0}
 
-    first_embedding = get_embedding(chunks[0])
+    first_embedding = get_passage_embedding(chunks[0])
     vector_size = len(first_embedding)
     db.create_collection(vector_size)
 
@@ -30,7 +30,7 @@ def ingest_document(source: str, text: str):
     for idx, chunk in enumerate(chunks):
         if idx == 0:
             continue
-        embedding = get_embedding(chunk)
+        embedding = get_passage_embedding(chunk)
 
         points.append({
             "id": uuid.uuid5(uuid.NAMESPACE_DNS, f"{source}-{idx}"),

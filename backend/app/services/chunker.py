@@ -1,31 +1,40 @@
 import re
-from app.utils.text_cleaning import clean_text
 
-def chunk_text(text: str, max_tokens: int = 400, overlap_tokens: int = 100):
-    text = clean_text(text)
+def chunk_text(text: str, max_len=350, overlap=1):
 
-    # 문장 단위 분리
-    sentences = re.split(r'(?<=[.!?])\s+', text)
+    paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
 
     chunks = []
-    current_chunk = []
-    current_len = 0
+    prev_sents = []
 
-    for sent in sentences:
-        sent_len = len(sent)
+    for para in paragraphs:
 
-        if current_len + sent_len <= max_tokens:
-            current_chunk.append(sent)
-            current_len += sent_len
+        sents = re.split(r'(?<=[\.!?]|다\.)\s+', para)
 
-        else:
-            chunks.append(" ".join(current_chunk))
+        current = []
 
-            overlap_text = " ".join(current_chunk)[-overlap_tokens:]
-            current_chunk = [overlap_text, sent]
-            current_len = len(overlap_text) + sent_len
+        for sent in sents:
+            sent = sent.strip()
+            if not sent:
+                continue
 
-    if current_chunk:
-        chunks.append(" ".join(current_chunk))
+            tentative = " ".join(current + [sent])
+
+            if len(tentative) <= max_len:
+                current.append(sent)
+
+            else:
+                if current:
+                    chunks.append(" ".join(current))
+
+                if overlap > 0:
+                    current = prev_sents[-overlap:] + [sent]
+                else:
+                    current = [sent]
+
+            prev_sents = current[:]
+
+        if current:
+            chunks.append(" ".join(current))
 
     return chunks

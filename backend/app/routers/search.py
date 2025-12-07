@@ -1,23 +1,23 @@
 from fastapi import APIRouter
-from app.services.embedding import get_embedding
+from app.services.embedding import get_embedding, get_query_embedding
 from app.services.qdrant_client import QdrantDB
 
 router = APIRouter()
 
 @router.get("/search")
-def search(q: str):
+def search(q: str, top_k: int = 5):
     db = QdrantDB()
-    query_vector = get_embedding(q)
+    query_vector = get_query_embedding(q)
 
-    hits = db.search(query_vector)
+    hits = db.search(query_vector, top_k=top_k)
 
-    results = [
+    return [
         {
-            "id": hit.id,
-            "score": hit.score,
-            "payload": hit.payload,
+            "score": h.score,
+            "text": h.payload.get("text"),
+            "source": h.payload.get("source"),
+            "chunk_id": h.payload.get("chunk_id"),
+            "id": h.id
         }
-        for hit in hits
+        for h in hits
     ]
-
-    return {"results": results}
