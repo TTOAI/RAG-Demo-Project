@@ -1,7 +1,7 @@
 import uuid
 
 from app.services.chunker import chunk_text
-from app.services.embedding import get_embedding, get_passage_embedding
+from app.services.embedding import get_passage_embedding
 from app.services.qdrant_client import QdrantDB
 
 def ingest_document(source: str, text: str):

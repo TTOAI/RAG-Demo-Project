@@ -1,6 +1,7 @@
 import os
 from fastapi import APIRouter
-from app.services.embedding import EMBED_MODEL
+
+embed_model = os.getenv("EMBED_MODEL")
 
 router = APIRouter()
 

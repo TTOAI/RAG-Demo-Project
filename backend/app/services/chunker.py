@@ -1,15 +1,15 @@
 import re
 
-def chunk_text(text: str, max_len=350, overlap=1):
+def chunk_text(text: str, max_len=220, overlap=2):
 
-    paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
+    paragraphs = re.split(r"\n{2,}", text)
 
     chunks = []
     prev_sents = []
 
     for para in paragraphs:
 
-        sents = re.split(r'(?<=[\.!?]|다\.)\s+', para)
+        sents = re.split(r'(?<=[.!?])\s+', para)
 
         current = []
 

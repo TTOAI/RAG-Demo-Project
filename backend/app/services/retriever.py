@@ -1,4 +1,4 @@
-from app.services.embedding import get_embedding, get_query_embedding
+from app.services.embedding import get_query_embedding
 from app.services.qdrant_client import QdrantDB
 
 class Retriever:
