@@ -3,3 +3,5 @@ uvicorn
 qdrant-client
 python-dotenv
 sentence-transformers
+openai
+requests
