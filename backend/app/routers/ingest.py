@@ -6,9 +6,4 @@ router = APIRouter()
 
 @router.post("/ingest")
 def ingest(req: IngestRequest):
-    chunks = ingest_document(req.source, req.text)
-    return {
-        "message": "Document chunked successfully",
-        "total_chunks": len(chunks),
-        "chunks_preview": chunks[:3]
-    }
+    return ingest_document(req.source, req.text)
