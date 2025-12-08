@@ -30,30 +30,30 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 ## 수행 내용
 
 ### 1. 실행환경 세팅
-- 
+- `backend/main.py`, `backend/requirements.txt`, `backend/Dockerfile`, `backend/docker-compose.yml`
 - Docker Compose 기반 FastAPI + Qdrant 환경 구성
 - 서버 및 Swagger 정상 동작 확인
 
 ### 2. 문서 Ingestion & Chunking
-- 
+- `backend/app/routers/ingest.py`, `backend/app/models/schemas.py`, `backend/app/services/ingestion.py`, `backend/app/utils/text_cleaning.py`, `backend/app/services/chunker.py`
 - 문서 정제 기능 구현
 - 문서를 일정 길이의 chunk로 분할
 - `/ingest` API를 통해 chunk 결과 반환
 
 ### 3. Embedding
-- 
-- Sentence-Transformers(all-MiniLM-L6-v2) 기반 embedding 적용
+- `backend/app/services/embedding.py`, `backend/app/routers/test_embed.py`
+- Sentence-Transformers 기반 embedding 적용
 - `/test-embed` API로 embedding 벡터 테스트
 
 ### 4. Qdrant Vector DB upsert & search
-- 
+- `backend/app/services/qdrant_client.py`, `backend/app/routers/search.py`
 - Qdrant 컬렉션 자동 생성
 - chunk + embedding → Qdrant 저장
 - `/search?q=` API로 관련 chunk 검색
 - end-to-end ingestion 파이프라인 완성
 
 ### 5. Retrieval 파이프라인 구성
-- 
+- `backend/app/routers/query.py`, `backend/app/services/retriever.py`, `backend/app/services/prompter.py`
 - 질문 → embedding
 - Qdrant에서 관련 문서 검색
 - 검색된 chunk 취합
@@ -61,28 +61,36 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 - LLM에게 전달할 준비 완료
 
 ### 6. LLM 연동 및 RAG 완성
-- 
+- `backend/app/services/llm_client.py`, `backend/app/routers/query.py`, `docker-compose.yml`
 - 검색된 문서 기반 prompt 생성
 - prompt → LLM 전달
 - OpenAI GPT로 답변 생성
 - 최종 `/query` RAG API 완성
 
 ### Streamlit UI 추가
-- `frontend/app.py`
+- `frontend/app.py`, `frontend/Dockerfile`, `frontend/requirements.txt`
 - `/query` 엔드포인트로 RAG 답변 호출
 - 답변, 근거 chunk, 점수를 UI로 확인 가능
 
 ---
 
-## 토의
+## 실행 방법
 
-### 트러블슈팅
+- `docker compose up --build -d`로 Docker Compose 실행
+- 브라우저에서 `http://localhost:8501`로 접속
 
 ---
 
-## 실행 방법
-- `docker compose up --build`로 Docker Compose 실행
-- 브라우저에서 `http://localhost:8501`로 접속
+## 실행 결과
+
+- 문서: 2025 아주대학교 요람_소프트웨어학과
+![alt text](image.png)
+- 문서: 학사과정_학사운영규칙
+![alt text](image-1.png)
+
+---
+
+## 토의
 
 ### 비교 및 대안
 
@@ -124,4 +132,33 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
     - Multilingual embedding, Multimodal embedding 등 RAG 데이터 인덱싱을 위한 자체 embedding 모델 제공
     - Query Engine이 질문 종류에 따라 최적의 RAG Retrieval Pipeline을 자동 구성
 
+### 트러블슈팅
+
+#### 임베딩 모델 변경
+Before
+<p>
+- 초반에는 all-MiniLM-L6-v2를 임베딩 모델로 채택함
+- all-MiniLM-L6-v2는 sentence-transformers의 영어 중심 범용 임베딩 모델로서 한국어에 취약함
+- 한국어 문서에 대한 임베딩 품질이 낮아 Qdrant 검색 정확도가 떨어짐
+</p>
+After
+<p>
+- intfloat/multilingual-e5-small로 모델을 변경함
+- 100개 이상의 언어 멀티링구얼을 지원하는 모델로서 검색 성능이 향상됨
+</p>
+
+#### Chunk 전략 변경
+Before
+<p>
+- 초반에는 chunk를 고정 길이로 나누는 단순한 전략을 택함
+- 이로 인해 문장 중간에서 chunk가 잘려서 어색하게 끊김
+- 또한 chunk의 최대 길이를 300자로 제한하여 문맥을 온전히 보존하지 못함
+</p>
+After
+<p>
+- 문서의 특성을 반영하여 문단 별로 chunk를 나누도록 로직을 변경하고, chunk의 최대 길이를 1000자로 늘림
+- 문서의 문맥을 보존하여 의미 기반 검색 성능이 향상됨
+</p>
+
 ### 느낀 점
+Agent·Workflow·RAG 프레임워크에 의존하지 않고 직접 end-to-end RAG 파이프라인을 구현해보면서 VectorDB와 Embedding의 개념, 그리고 RAG의 내부 구조를 훨씬 깊이 이해할 수 있었다. 특히 chunk의 max_len과 overlap을 조절하거나 임베딩 모델을 교체해보는 과정을 통해 검색 성능과 응답 품질이 어떻게 달라지는지 직접 체감하며 파이프라인을 튜닝해볼 수 있었던 점이 큰 학습 경험이 되었다.
