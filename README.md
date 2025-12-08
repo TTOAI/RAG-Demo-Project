@@ -57,11 +57,21 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 - OpenAI GPT로 답변 생성
 - 최종 `/query` RAG API 완성
 
+### Streamlit UI 추가
+- 위치: `frontend/app.py`
+- 의존성: `pip install -r frontend/requirements.txt` (Streamlit + requests)
+- 실행: 백엔드(`docker compose up backend qdrant` 또는 `uvicorn main:app --reload`)가 떠 있는 상태에서 `streamlit run frontend/app.py` 실행. 필요하면 `BACKEND_URL=http://localhost:8000` 환경변수로 FastAPI URL을 지정.
+- 동작: `/query` 엔드포인트로 RAG 답변을, `/search` 엔드포인트로 벡터 검색 결과를 탭으로 나누어 호출하고, 근거 chunk와 점수를 UI로 확인할 수 있음.
+
+
+
 ## 토의
 
-### 어려웠던 점
+### 트러블슈팅
 
-### 실험
+## 실행 방법
+- `docker compose up --build`로 Docker Compose 실행
+- 브라우저에서 `http://localhost:8501`로 접속
 
 ### 비교 및 대안
 

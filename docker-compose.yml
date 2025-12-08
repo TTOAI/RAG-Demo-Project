@@ -17,5 +17,15 @@ services:
     depends_on:
       - qdrant
 
+  frontend:
+    build: ./frontend
+    container_name: rag-frontend
+    environment:
+      - BACKEND_URL=http://backend:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+
 volumes:
   qdrant_storage:
