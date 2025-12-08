@@ -6,6 +6,8 @@
 ## 학번 
 20216818
 
+---
+
 ## 동기
 <p>
 LLM의 기술적 발전은 많은 곳에서 도움이 되고 있다.
@@ -23,28 +25,35 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 (출처: [위키백과 - 검색증강생성성](https://ko.wikipedia.org/wiki/%EA%B2%80%EC%83%89%EC%A6%9D%EA%B0%95%EC%83%9D%EC%84%B1))
 </p>
 
+---
+
 ## 수행 내용
 
 ### 1. 실행환경 세팅
+- 
 - Docker Compose 기반 FastAPI + Qdrant 환경 구성
 - 서버 및 Swagger 정상 동작 확인
 
 ### 2. 문서 Ingestion & Chunking
+- 
 - 문서 정제 기능 구현
 - 문서를 일정 길이의 chunk로 분할
 - `/ingest` API를 통해 chunk 결과 반환
 
 ### 3. Embedding
+- 
 - Sentence-Transformers(all-MiniLM-L6-v2) 기반 embedding 적용
 - `/test-embed` API로 embedding 벡터 테스트
 
 ### 4. Qdrant Vector DB upsert & search
+- 
 - Qdrant 컬렉션 자동 생성
 - chunk + embedding → Qdrant 저장
 - `/search?q=` API로 관련 chunk 검색
 - end-to-end ingestion 파이프라인 완성
 
 ### 5. Retrieval 파이프라인 구성
+- 
 - 질문 → embedding
 - Qdrant에서 관련 문서 검색
 - 검색된 chunk 취합
@@ -52,22 +61,24 @@ RAG를 사용하면 LLM은 지정된 문서 집합을 참조할 때까지 사용
 - LLM에게 전달할 준비 완료
 
 ### 6. LLM 연동 및 RAG 완성
+- 
 - 검색된 문서 기반 prompt 생성
 - prompt → LLM 전달
 - OpenAI GPT로 답변 생성
 - 최종 `/query` RAG API 완성
 
 ### Streamlit UI 추가
-- 위치: `frontend/app.py`
-- 의존성: `pip install -r frontend/requirements.txt` (Streamlit + requests)
-- 실행: 백엔드(`docker compose up backend qdrant` 또는 `uvicorn main:app --reload`)가 떠 있는 상태에서 `streamlit run frontend/app.py` 실행. 필요하면 `BACKEND_URL=http://localhost:8000` 환경변수로 FastAPI URL을 지정.
-- 동작: `/query` 엔드포인트로 RAG 답변을, `/search` 엔드포인트로 벡터 검색 결과를 탭으로 나누어 호출하고, 근거 chunk와 점수를 UI로 확인할 수 있음.
+- `frontend/app.py`
+- `/query` 엔드포인트로 RAG 답변 호출
+- 답변, 근거 chunk, 점수를 UI로 확인 가능
 
-
+---
 
 ## 토의
 
 ### 트러블슈팅
+
+---
 
 ## 실행 방법
 - `docker compose up --build`로 Docker Compose 실행
